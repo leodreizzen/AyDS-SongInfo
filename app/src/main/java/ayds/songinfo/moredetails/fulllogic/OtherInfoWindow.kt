@@ -35,82 +35,88 @@ class OtherInfoWindow : Activity() {
         setContentView(R.layout.activity_other_info)
         textPane1 = findViewById(R.id.textPane1)
         val artistName = intent.getStringExtra("artistName")
-        if(artistName != null)
+        if (artistName != null)
             open(artistName)
     }
 
     fun getArtistInfo(artistName: String) {
-
         // create
         val lastFMAPI = initFMAPI()
         Log.e("TAG", "artistName $artistName")
         Thread {
             var text = ""
-            val article = getArticleFromDB(artistName)
+            var article = getArticleFromDB(artistName)
             if (article != null) {
                 text = "[*]" + article.biography
-                val urlString = article.articleUrl
-                showData(urlString)
-            } else { // get from service
-                try {
-                    val article = getArticleFromAPI(lastFMAPI, artistName)
-                    if(article.biography != null)
-                       saveArticle(article)
-
+                showData(article.articleUrl)
+            } else { // get from servic
+                article = getArticleFromAPI(lastFMAPI, artistName)
+                if (article != null){
+                    if (article.biography != null)
+                        saveArticle(article)
                     text = article.biography ?: "No Results"
-
                     showData(article.articleUrl)
-                } catch (e1: IOException) {
-                    Log.e("TAG", "Error $e1")
-                    e1.printStackTrace()
                 }
             }
             val imageUrl = LASTFM_IMAGE
             Log.e("TAG", "Get Image from $imageUrl")
-            val finalText = text
-            runOnUiThread {
-                Picasso.get().load(imageUrl).into(findViewById<View>(R.id.imageView1) as ImageView)
-                textPane1!!.text = Html.fromHtml(finalText)
-            }
+            showText(imageUrl, text)
         }.start()
     }
 
-    private fun getArticleFromDB(artistName: String?) =
-        dataBase!!.ArticleDao().getArticleByArtistName(artistName!!)
+    private fun showText(imageUrl: String, text: String) {
+        runOnUiThread {
+            Picasso.get().load(imageUrl).into(findViewById<View>(R.id.imageView1) as ImageView)
+            textPane1!!.text = Html.fromHtml(text)
+        }
+    }
 
-    private fun saveArticle(article: Article){
-        if(article.biography != null){
-            Thread {dataBase!!.ArticleDao().insertArticle(
-                ArticleEntity(
-                    article.artistName,
-                    article.biography,
-                    article.articleUrl
+    private fun getArticleFromDB(artistName: String?): Article?{
+        val article = dataBase!!.ArticleDao().getArticleByArtistName(artistName!!)
+        return if (article != null) {
+            Article(article.artistName, article.biography, article.articleUrl)
+        } else null
+    }
+
+    private fun saveArticle(article: Article) {
+        if (article.biography != null) {
+            Thread {
+                dataBase!!.ArticleDao().insertArticle(
+                    ArticleEntity(
+                        article.artistName,
+                        article.biography,
+                        article.articleUrl
+                    )
                 )
-            )
             }.start()
         }
     }
 
     private fun getArticleFromAPI(
         lastFMAPI: LastFMAPI,
-        artistName:String
-    ): Article {
-        val callResponse = lastFMAPI.getArtistInfo(artistName).execute()
-        Log.e("TAG", "JSON " + callResponse.body())
-        val gson = Gson()
-        val jobj = gson.fromJson(callResponse.body(), JsonObject::class.java)
-        val artist = jobj["artist"].getAsJsonObject()
-        val bio = artist["bio"].getAsJsonObject()
-        val extract = bio["content"]
-        var text: String?
-        if (extract != null){
-            text = extract.asString.replace("\\n", "\n")
-            text = textToHtml(text, artistName)
+        artistName: String
+    ): Article? {
+        try {
+            val callResponse = lastFMAPI.getArtistInfo(artistName).execute()
+            Log.e("TAG", "JSON " + callResponse.body())
+            val gson = Gson()
+            val jobj = gson.fromJson(callResponse.body(), JsonObject::class.java)
+            val artist = jobj["artist"].getAsJsonObject()
+            val bio = artist["bio"].getAsJsonObject()
+            val extract = bio["content"]
+            var text: String?
+            if (extract != null) {
+                text = extract.asString.replace("\\n", "\n")
+                text = textToHtml(text, artistName)
+            } else
+                text = null
+            val url = artist["url"].toString()
+            return Article(artistName, text, url)
+        } catch (e: IOException) {
+            Log.e("TAG", "Error $e")
+            e.printStackTrace()
+            return null
         }
-        else
-            text = null
-        val url = artist["url"].toString()
-        return Article(artistName, text, url)
     }
 
 
@@ -161,7 +167,12 @@ class OtherInfoWindow : Activity() {
             return builder.toString()
         }
     }
-    internal data class Article(val artistName: String, val biography: String?, val articleUrl: String){
+
+    internal data class Article(
+        val artistName: String,
+        val biography: String?,
+        val articleUrl: String
+    ) {
 
     }
 
