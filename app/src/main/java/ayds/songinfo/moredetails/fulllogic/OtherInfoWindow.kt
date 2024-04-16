@@ -27,6 +27,7 @@ private const val LASTFM_IMAGE =
 
 class OtherInfoWindow : Activity() {
     private var textPane1: TextView? = null
+    private var lastFMAPI : LastFMAPI? = null
 
     //private JPanel imagePanel;
     // private JLabel posterImageLabel;
@@ -39,20 +40,24 @@ class OtherInfoWindow : Activity() {
             open(artistName)
     }
 
-    fun getArtistInfo(artistName: String) {
-        val lastFMAPI = initFMAPI()
+    private fun getArtistInfo(artistName: String) {
         Log.e("TAG", "artistName $artistName")
         Thread {
-            var article = getArticleFromDB(artistName)
-            if (article == null) {
-                article = getArticleFromAPI(lastFMAPI, artistName)
-                if (article != null) {
-                    if (article.biography != null)
-                        saveArticle(article)
-                }
-            }
+            val article = getArticle(artistName)
             showData(article)
         }.start()
+    }
+
+    private fun getArticle(artistName: String): Article?{
+        var article = getArticleFromDB(artistName)
+        if (article == null) {
+            article = getArticleFromAPI(artistName)
+            if (article != null) {
+                if (article.biography != null)
+                    saveArticle(article)
+            }
+        }
+        return article
     }
 
     private fun showData(
@@ -97,11 +102,10 @@ class OtherInfoWindow : Activity() {
     }
 
     private fun getArticleFromAPI(
-        lastFMAPI: LastFMAPI,
         artistName: String
     ): Article? {
         try {
-            val callResponse = lastFMAPI.getArtistInfo(artistName).execute()
+            val callResponse = lastFMAPI!!.getArtistInfo(artistName).execute()
             Log.e("TAG", "JSON " + callResponse.body())
             val gson = Gson()
             val jobj = gson.fromJson(callResponse.body(), JsonObject::class.java)
@@ -132,19 +136,19 @@ class OtherInfoWindow : Activity() {
         }
     }
 
-    private fun initFMAPI(): LastFMAPI {
+    private fun initFMAPI() {
         val retrofit = Retrofit.Builder()
             .baseUrl(AUDIO_SCROBBLER)
             .addConverterFactory(ScalarsConverterFactory.create())
             .build()
-        val lastFMAPI = retrofit.create(LastFMAPI::class.java)
-        return lastFMAPI
+        lastFMAPI = retrofit.create(LastFMAPI::class.java)
     }
 
     private var dataBase: ArticleDatabase? = null
     private fun open(artist: String) {
         dataBase =
             databaseBuilder(this, ArticleDatabase::class.java, "database-name-thename").build()
+        initFMAPI()
         Thread {
             dataBase!!.ArticleDao().insertArticle(ArticleEntity("test", "sarasa", ""))
             Log.e("TAG", "" + dataBase!!.ArticleDao().getArticleByArtistName("test"))
