@@ -25,6 +25,14 @@ private const val AUDIO_SCROBBLER = "https://ws.audioscrobbler.com/2.0/"
 private const val LASTFM_IMAGE =
     "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Lastfm_logo.svg/320px-Lastfm_logo.svg.png"
 
+private const val URL = "url"
+
+private const val CONTENT = "content"
+
+private const val ARTIST = "artist"
+
+private const val BIO = "bio"
+
 class OtherInfoWindow : Activity() {
     private var textPane1: TextView? = null
     private var lastFMAPI : LastFMAPI? = null
@@ -112,16 +120,9 @@ class OtherInfoWindow : Activity() {
             Log.e("TAG", "JSON " + callResponse.body())
             val gson = Gson()
             val jobj = gson.fromJson(callResponse.body(), JsonObject::class.java)
-            val artist = jobj["artist"].getAsJsonObject()
-            val bio = artist["bio"].getAsJsonObject()
-            val extract = bio["content"]
-            var text: String?
-            if (extract != null) {
-                text = extract.asString.replace("\\n", "\n")
-                text = textToHtml(text, artistName)
-            } else
-                text = null
-            val url = artist["url"].toString()
+            val artist = getArtist(jobj)
+            val text: String? = getBioText(artist, artistName)
+            val url = artist[URL].toString()
             return Article(artistName, text, url, false)
         } catch (e: IOException) {
             Log.e("TAG", "Error $e")
@@ -129,6 +130,24 @@ class OtherInfoWindow : Activity() {
             return null
         }
     }
+
+    private fun getBioText(artist : JsonObject, artistName: String): String? {
+        val bio = getBio(artist)
+        val extract = bio[CONTENT]
+        var text: String?
+        if (extract != null) {
+            text = extract.asString.replace("\\n", "\n")
+            text = textToHtml(text, artistName)
+        } else
+            text = null
+        return text
+    }
+
+    private fun getBio(artist: JsonObject): JsonObject =
+        artist[BIO].getAsJsonObject()
+
+    private fun getArtist(jobj: JsonObject): JsonObject =
+        jobj[ARTIST].getAsJsonObject()
 
 
     private fun setUrlButtonLink(urlString: String) {
