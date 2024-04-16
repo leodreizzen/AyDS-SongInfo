@@ -52,8 +52,7 @@ class OtherInfoWindow : Activity() {
         var article = getArticleFromDB(artistName)
         if (article == null) {
             article = getArticleFromAPI(artistName)
-            if (article != null) {
-                if (article.biography != null)
+            if (article?.biography != null){
                     saveArticle(article)
             }
         }
@@ -63,19 +62,23 @@ class OtherInfoWindow : Activity() {
     private fun showData(
         article: Article?,
     ) {
-        var text = ""
         if (article != null) {
-            text = (if (article.isLocallyStored) "[*]" else "") + (article.biography ?: "No Results")
             setUrlButtonLink(article.articleUrl)
         }
-        val imageUrl = LASTFM_IMAGE
-        Log.e("TAG", "Get Image from $imageUrl")
-        showText(imageUrl, text)
+        showText(getText(article))
     }
 
-    private fun showText(imageUrl: String, text: String) {
+    private fun getText(article: Article?): String{
+        if(article != null)
+            return (if (article.isLocallyStored) "[*]" else "") + (article.biography ?: "No Results")
+        else
+            return ""
+    }
+
+    private fun showText(text: String) {
         runOnUiThread {
-            Picasso.get().load(imageUrl).into(findViewById<View>(R.id.imageView1) as ImageView)
+            Log.e("TAG", "Get Image from $LASTFM_IMAGE")
+            Picasso.get().load(LASTFM_IMAGE).into(findViewById<View>(R.id.imageView1) as ImageView)
             textPane1!!.text = Html.fromHtml(text)
         }
     }
