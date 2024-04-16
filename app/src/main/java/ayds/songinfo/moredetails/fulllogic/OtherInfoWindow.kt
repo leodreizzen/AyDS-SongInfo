@@ -40,28 +40,32 @@ class OtherInfoWindow : Activity() {
     }
 
     fun getArtistInfo(artistName: String) {
-        // create
         val lastFMAPI = initFMAPI()
         Log.e("TAG", "artistName $artistName")
         Thread {
-            var text = ""
             var article = getArticleFromDB(artistName)
-            if (article != null) {
-                text = "[*]" + article.biography
-                showData(article.articleUrl)
-            } else { // get from servic
+            if (article == null) {
                 article = getArticleFromAPI(lastFMAPI, artistName)
-                if (article != null){
+                if (article != null) {
                     if (article.biography != null)
                         saveArticle(article)
-                    text = article.biography ?: "No Results"
-                    showData(article.articleUrl)
                 }
             }
-            val imageUrl = LASTFM_IMAGE
-            Log.e("TAG", "Get Image from $imageUrl")
-            showText(imageUrl, text)
+            showData(article)
         }.start()
+    }
+
+    private fun showData(
+        article: Article?,
+    ) {
+        var text = ""
+        if (article != null) {
+            text = (if (article.isLocallyStored) "[*]" else "") + (article.biography ?: "No Results")
+            setUrlButtonLink(article.articleUrl)
+        }
+        val imageUrl = LASTFM_IMAGE
+        Log.e("TAG", "Get Image from $imageUrl")
+        showText(imageUrl, text)
     }
 
     private fun showText(imageUrl: String, text: String) {
@@ -71,10 +75,10 @@ class OtherInfoWindow : Activity() {
         }
     }
 
-    private fun getArticleFromDB(artistName: String?): Article?{
+    private fun getArticleFromDB(artistName: String?): Article? {
         val article = dataBase!!.ArticleDao().getArticleByArtistName(artistName!!)
         return if (article != null) {
-            Article(article.artistName, article.biography, article.articleUrl)
+            Article(article.artistName, article.biography, article.articleUrl, true)
         } else null
     }
 
@@ -111,7 +115,7 @@ class OtherInfoWindow : Activity() {
             } else
                 text = null
             val url = artist["url"].toString()
-            return Article(artistName, text, url)
+            return Article(artistName, text, url, false)
         } catch (e: IOException) {
             Log.e("TAG", "Error $e")
             e.printStackTrace()
@@ -120,7 +124,7 @@ class OtherInfoWindow : Activity() {
     }
 
 
-    private fun showData(urlString: String) {
+    private fun setUrlButtonLink(urlString: String) {
         findViewById<View>(R.id.openUrlButton1).setOnClickListener {
             val intent = Intent(Intent.ACTION_VIEW)
             intent.setData(Uri.parse(urlString))
@@ -171,7 +175,8 @@ class OtherInfoWindow : Activity() {
     internal data class Article(
         val artistName: String,
         val biography: String?,
-        val articleUrl: String
+        val articleUrl: String,
+        val isLocallyStored: Boolean
     ) {
 
     }
