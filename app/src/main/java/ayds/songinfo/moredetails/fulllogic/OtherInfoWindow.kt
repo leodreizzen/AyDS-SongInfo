@@ -34,38 +34,31 @@ class OtherInfoWindow : Activity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_other_info)
         textPane1 = findViewById(R.id.textPane1)
-        open(intent.getStringExtra("artistName"))
+        val artistName = intent.getStringExtra("artistName")
+        if(artistName != null)
+            open(artistName)
     }
 
-    fun getArtistInfo(artistName: String?) {
+    fun getArtistInfo(artistName: String) {
 
         // create
         val lastFMAPI = initFMAPI()
         Log.e("TAG", "artistName $artistName")
         Thread {
-            val article = dataBase!!.ArticleDao().getArticleByArtistName(artistName!!)
             var text = ""
-            if (article != null) { // exists in db
+            val article = getArticleFromDB(artistName)
+            if (article != null) {
                 text = "[*]" + article.biography
                 val urlString = article.articleUrl
                 showData(urlString)
             } else { // get from service
-
                 try {
                     val article = getArticleFromAPI(lastFMAPI, artistName)
-                    if (article.biography == null) {
-                        text = "No Results"
-                    } else {
-                        Thread {
-                            dataBase!!.ArticleDao().insertArticle(
-                                ArticleEntity(
-                                    article.artistName,
-                                    article.biography,
-                                    article.articleUrl
-                                )
-                            )
-                        }.start()
-                    }
+                    if(article.biography != null)
+                       saveArticle(article)
+
+                    text = article.biography ?: "No Results"
+
                     showData(article.articleUrl)
                 } catch (e1: IOException) {
                     Log.e("TAG", "Error $e1")
@@ -80,6 +73,22 @@ class OtherInfoWindow : Activity() {
                 textPane1!!.text = Html.fromHtml(finalText)
             }
         }.start()
+    }
+
+    private fun getArticleFromDB(artistName: String?) =
+        dataBase!!.ArticleDao().getArticleByArtistName(artistName!!)
+
+    private fun saveArticle(article: Article){
+        if(article.biography != null){
+            Thread {dataBase!!.ArticleDao().insertArticle(
+                ArticleEntity(
+                    article.artistName,
+                    article.biography,
+                    article.articleUrl
+                )
+            )
+            }.start()
+        }
     }
 
     private fun getArticleFromAPI(
@@ -123,7 +132,7 @@ class OtherInfoWindow : Activity() {
     }
 
     private var dataBase: ArticleDatabase? = null
-    private fun open(artist: String?) {
+    private fun open(artist: String) {
         dataBase =
             databaseBuilder(this, ArticleDatabase::class.java, "database-name-thename").build()
         Thread {
