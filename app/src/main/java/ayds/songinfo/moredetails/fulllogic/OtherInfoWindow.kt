@@ -12,8 +12,10 @@ import android.widget.TextView
 import androidx.room.Room.databaseBuilder
 import ayds.songinfo.R
 import com.google.gson.Gson
+import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.squareup.picasso.Picasso
+import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.scalars.ScalarsConverterFactory
 import java.io.IOException
@@ -118,12 +120,7 @@ class OtherInfoWindow : Activity() {
         try {
             val callResponse = lastFMAPI!!.getArtistInfo(artistName).execute()
             Log.e("TAG", "JSON " + callResponse.body())
-            val gson = Gson()
-            val jobj = gson.fromJson(callResponse.body(), JsonObject::class.java)
-            val artist = getArtist(jobj)
-            val text: String? = getBioText(artist, artistName)
-            val url = artist[URL].toString()
-            return Article(artistName, text, url, false)
+            return getArticleFromResponse(callResponse, artistName)
         } catch (e: IOException) {
             Log.e("TAG", "Error $e")
             e.printStackTrace()
@@ -131,17 +128,47 @@ class OtherInfoWindow : Activity() {
         }
     }
 
+    private fun getArticleFromResponse(
+        callResponse: Response<String>,
+        artistName: String
+    ): Article {
+        val jobj = getJson(callResponse)
+        val artist = getArtist(jobj)
+        val text: String? = getBioText(artist, artistName)
+        val url = getUrl(artist)
+        return Article(artistName, text, url, false)
+    }
+
+    private fun getJson(
+        callResponse: Response<String>
+    ): JsonObject {
+        val gson = Gson()
+        return gson.fromJson(callResponse.body(), JsonObject::class.java)
+    }
+
+    private fun getUrl(artist: JsonObject) = artist[URL].toString()
+
     private fun getBioText(artist : JsonObject, artistName: String): String? {
         val bio = getBio(artist)
-        val extract = bio[CONTENT]
-        var text: String?
-        if (extract != null) {
-            text = extract.asString.replace("\\n", "\n")
-            text = textToHtml(text, artistName)
+        val extract = getBioContent(bio)
+        val text = if (extract != null) {
+            getTextFromBioContent(extract, artistName)
         } else
-            text = null
+            null
         return text
     }
+
+    private fun getTextFromBioContent(
+        extract: JsonElement,
+        artistName: String
+    ): String {
+        var text = extract.asString.replace("\\n", "\n")
+        text = textToHtml(text, artistName)
+        return text
+    }
+
+    private fun getBioContent(bio: JsonObject): JsonElement? =
+        bio[CONTENT]
 
     private fun getBio(artist: JsonObject): JsonObject =
         artist[BIO].getAsJsonObject()
