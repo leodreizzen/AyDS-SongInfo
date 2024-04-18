@@ -198,11 +198,6 @@ class OtherInfoWindow : Activity() {
         dataBase =
             databaseBuilder(this, ArticleDatabase::class.java, "database-name-thename").build()
         initFMAPI()
-        Thread {
-            dataBase!!.ArticleDao().insertArticle(ArticleEntity("test", "sarasa", ""))
-            Log.e("TAG", "" + dataBase!!.ArticleDao().getArticleByArtistName("test"))
-            Log.e("TAG", "" + dataBase!!.ArticleDao().getArticleByArtistName("nada"))
-        }.start()
         getArtistInfo(artist)
     }
 
