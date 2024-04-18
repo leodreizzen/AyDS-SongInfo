@@ -36,21 +36,25 @@ private const val ARTIST = "artist"
 private const val BIO = "bio"
 
 class OtherInfoWindow : Activity() {
-    private var textPane1: TextView? = null
-    private var lastFMAPI : LastFMAPI? = null
+    private lateinit var textPane1: TextView
+    private lateinit var lastFMAPI : LastFMAPI
 
-    //private JPanel imagePanel;
-    // private JLabel posterImageLabel;
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_other_info)
-        textPane1 = findViewById(R.id.textPane1)
-        val artistName = intent.getStringExtra("artistName")
+        initGUI()
+        val artistName = getArtistName()
         if (artistName != null)
             open(artistName)
     }
 
-    private fun getArtistInfo(artistName: String) {
+    private fun getArtistName() = intent.getStringExtra("artistName")
+
+    private fun initGUI() {
+        setContentView(R.layout.activity_other_info)
+        textPane1 = findViewById(R.id.textPane1)
+    }
+
+    private fun getAndShowArtistInfo(artistName: String) {
         Log.e("TAG", "artistName $artistName")
         Thread {
             val article = getArticle(artistName)
@@ -89,12 +93,12 @@ class OtherInfoWindow : Activity() {
         runOnUiThread {
             Log.e("TAG", "Get Image from $LASTFM_IMAGE")
             Picasso.get().load(LASTFM_IMAGE).into(findViewById<View>(R.id.imageView1) as ImageView)
-            textPane1!!.text = Html.fromHtml(text)
+            textPane1.text = Html.fromHtml(text)
         }
     }
 
-    private fun getArticleFromDB(artistName: String?): Article? {
-        val article = dataBase!!.ArticleDao().getArticleByArtistName(artistName!!)
+    private fun getArticleFromDB(artistName: String): Article? {
+        val article = dataBase.ArticleDao().getArticleByArtistName(artistName)
         return if (article != null) {
             Article(article.artistName, article.biography, article.articleUrl, true)
         } else null
@@ -103,7 +107,7 @@ class OtherInfoWindow : Activity() {
     private fun saveArticle(article: Article) {
         if (article.biography != null) {
             Thread {
-                dataBase!!.ArticleDao().insertArticle(
+                dataBase.ArticleDao().insertArticle(
                     ArticleEntity(
                         article.artistName,
                         article.biography,
@@ -118,7 +122,7 @@ class OtherInfoWindow : Activity() {
         artistName: String
     ): Article? {
         try {
-            val callResponse = lastFMAPI!!.getArtistInfo(artistName).execute()
+            val callResponse = lastFMAPI.getArtistInfo(artistName).execute()
             Log.e("TAG", "JSON " + callResponse.body())
             return getArticleFromResponse(callResponse, artistName)
         } catch (e: IOException) {
@@ -193,17 +197,17 @@ class OtherInfoWindow : Activity() {
         lastFMAPI = retrofit.create(LastFMAPI::class.java)
     }
 
-    private var dataBase: ArticleDatabase? = null
+    private lateinit var dataBase: ArticleDatabase
     private fun open(artist: String) {
         dataBase =
             databaseBuilder(this, ArticleDatabase::class.java, "database-name-thename").build()
         initFMAPI()
-        getArtistInfo(artist)
+        getAndShowArtistInfo(artist)
     }
 
     companion object {
         const val ARTIST_NAME_EXTRA = "artistName"
-        fun textToHtml(text: String, term: String?): String {
+        fun textToHtml(text: String, term: String): String {
             val builder = StringBuilder()
             builder.append("<html><div width=400>")
             builder.append("<font face=\"arial\">")
@@ -212,7 +216,7 @@ class OtherInfoWindow : Activity() {
                 .replace("\n", "<br>")
                 .replace(
                     "(?i)$term".toRegex(),
-                    "<b>" + term!!.uppercase(Locale.getDefault()) + "</b>"
+                    "<b>" + term.uppercase(Locale.getDefault()) + "</b>"
                 )
             builder.append(textWithBold)
             builder.append("</font></div></html>")
@@ -225,8 +229,5 @@ class OtherInfoWindow : Activity() {
         val biography: String?,
         val articleUrl: String,
         val isLocallyStored: Boolean
-    ) {
-
-    }
-
+    )
 }
