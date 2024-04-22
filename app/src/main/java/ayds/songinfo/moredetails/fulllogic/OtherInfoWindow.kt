@@ -36,30 +36,36 @@ private const val ARTIST = "artist"
 private const val BIO = "bio"
 
 class OtherInfoWindow : Activity() {
-    private lateinit var textPane1: TextView
+    private lateinit var articleTextView: TextView
     private lateinit var lastFMAPI : LastFMAPI
+    private lateinit var openURLButton : View
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         initGUI()
-        val artistName = getArtistName()
-        if (artistName != null)
-            open(artistName)
+        initDatabase()
+        initFMAPI()
+        open()
     }
 
     private fun getArtistName() = intent.getStringExtra("artistName")
 
     private fun initGUI() {
         setContentView(R.layout.activity_other_info)
-        textPane1 = findViewById(R.id.textPane1)
+        articleTextView = findViewById(R.id.textPane1)
+        openURLButton = findViewById(R.id.openUrlButton1)
+    }
+
+    private fun getAndShowArtistInfoAsync(artistName: String) {
+        Log.e("TAG", "artistName $artistName")
+        Thread {
+            getAndShowArtistInfo(artistName)
+        }.start()
     }
 
     private fun getAndShowArtistInfo(artistName: String) {
-        Log.e("TAG", "artistName $artistName")
-        Thread {
-            val article = getArticle(artistName)
-            showData(article)
-        }.start()
+        val article = getArticle(artistName)
+        showData(article)
     }
 
     private fun getArticle(artistName: String): Article?{
@@ -93,7 +99,7 @@ class OtherInfoWindow : Activity() {
         runOnUiThread {
             Log.e("TAG", "Get Image from $LASTFM_IMAGE")
             Picasso.get().load(LASTFM_IMAGE).into(findViewById<View>(R.id.imageView1) as ImageView)
-            textPane1.text = Html.fromHtml(text)
+            articleTextView.text = Html.fromHtml(text)
         }
     }
 
@@ -182,7 +188,8 @@ class OtherInfoWindow : Activity() {
 
 
     private fun setUrlButtonLink(urlString: String) {
-        findViewById<View>(R.id.openUrlButton1).setOnClickListener {
+
+        openURLButton.setOnClickListener {
             val intent = Intent(Intent.ACTION_VIEW)
             intent.setData(Uri.parse(urlString))
             startActivity(intent)
@@ -198,11 +205,17 @@ class OtherInfoWindow : Activity() {
     }
 
     private lateinit var dataBase: ArticleDatabase
-    private fun open(artist: String) {
-        dataBase =
-            databaseBuilder(this, ArticleDatabase::class.java, "database-name-thename").build()
-        initFMAPI()
-        getAndShowArtistInfo(artist)
+    private fun open() {
+        val artist = getArtistName()
+        if (artist != null){
+            getAndShowArtistInfoAsync(artist)
+        }
+
+    }
+
+    private fun initDatabase(){
+        dataBase = databaseBuilder(this, ArticleDatabase::class.java, "database-name-thename").build()
+
     }
 
     companion object {
