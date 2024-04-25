@@ -39,6 +39,7 @@ class OtherInfoWindow : Activity() {
     private lateinit var articleTextView: TextView
     private lateinit var lastFMAPI : LastFMAPI
     private lateinit var openURLButton : View
+    private lateinit var imageView: ImageView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,6 +55,7 @@ class OtherInfoWindow : Activity() {
         setContentView(R.layout.activity_other_info)
         articleTextView = findViewById(R.id.textPane1)
         openURLButton = findViewById(R.id.openUrlButton1)
+        imageView = findViewById<View>(R.id.imageView1) as ImageView
     }
 
     private fun getAndShowArtistInfoAsync(artistName: String) {
@@ -98,7 +100,7 @@ class OtherInfoWindow : Activity() {
     private fun showText(text: String) {
         runOnUiThread {
             Log.e("TAG", "Get Image from $LASTFM_IMAGE")
-            Picasso.get().load(LASTFM_IMAGE).into(findViewById<View>(R.id.imageView1) as ImageView)
+            Picasso.get().load(LASTFM_IMAGE).into(imageView)
             articleTextView.text = Html.fromHtml(text)
         }
     }
