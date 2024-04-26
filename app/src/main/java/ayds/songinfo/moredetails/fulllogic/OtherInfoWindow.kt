@@ -158,7 +158,7 @@ class OtherInfoWindow : Activity() {
         return gson.fromJson(callResponse.body(), JsonObject::class.java)
     }
 
-    private fun getUrl(artist: JsonObject) = artist[URL].toString().replace("\"", "")
+    private fun getUrl(artist: JsonObject) = artist[URL].asString
 
     private fun getBioText(artist : JsonObject, artistName: String): String? {
         val bio = getBio(artist)
