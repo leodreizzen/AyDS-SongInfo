@@ -21,7 +21,7 @@ object ArticleRepositoryInjector {
         val database = initDatabase(context)
 
         val lastFMArticleService =
-            ayds.songinfo.moredetails.data.external.lastfm.LastFmArticleServiceImpl(articleResolver, lastFMAPI)
+            LastFmArticleServiceImpl(articleResolver, lastFMAPI)
         val lastfmLocalStorage = LastfmLocalStorageImpl(database)
 
         repository = ArticleRepositoryImpl(lastFMArticleService, lastfmLocalStorage)

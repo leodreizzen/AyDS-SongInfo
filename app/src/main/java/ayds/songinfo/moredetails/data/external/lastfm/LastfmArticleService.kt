@@ -6,9 +6,9 @@ interface LastfmArticleService {
 }
 
 class LastFmArticleServiceImpl(
-    private val articleResolver: ayds.songinfo.moredetails.data.external.lastfm.LastfmToArticleResolver,
-    private val lastFMAPI: ayds.songinfo.moredetails.data.external.lastfm.LastFMAPI
-) : ayds.songinfo.moredetails.data.external.lastfm.LastfmArticleService {
+    private val articleResolver: LastfmToArticleResolver,
+    private val lastFMAPI: LastFMAPI
+) : LastfmArticleService {
     override fun getArticle(artistName: String): Article? {
         val callResponse = lastFMAPI.getArtistInfo(artistName).execute()
         return callResponse.body()?.let { articleResolver.getArticleFromExternalData(it, artistName) }
