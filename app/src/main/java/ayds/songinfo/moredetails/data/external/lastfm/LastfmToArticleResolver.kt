@@ -1,6 +1,6 @@
 package ayds.songinfo.moredetails.data.external.lastfm
 
-import ayds.songinfo.moredetails.domain.Article
+import ayds.songinfo.moredetails.domain.Article.LastFMArticle
 import com.google.gson.Gson
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
@@ -13,7 +13,7 @@ private const val BIO = "bio"
 
 
 interface LastfmToArticleResolver {
-    fun getArticleFromExternalData(serviceData: String, artistName: String): Article
+    fun getArticleFromExternalData(serviceData: String, artistName: String): LastFMArticle
 }
 
 class JsonToArticleResolver: LastfmToArticleResolver{
@@ -21,12 +21,12 @@ class JsonToArticleResolver: LastfmToArticleResolver{
     override fun getArticleFromExternalData(
         serviceData: String,
         artistName: String
-    ): Article {
+    ): LastFMArticle {
         val jobj = getJson(serviceData)
         val artist = getArtist(jobj)
         val text: String? = getBioText(artist, artistName)
         val url = getUrl(artist)
-        return Article(artistName, text, url, false)
+        return LastFMArticle(artistName, text, url, false)
     }
 
     private fun getJson(

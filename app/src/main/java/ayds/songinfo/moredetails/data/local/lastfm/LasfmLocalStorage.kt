@@ -1,23 +1,23 @@
 package ayds.songinfo.moredetails.data.local.lastfm
-import ayds.songinfo.moredetails.domain.Article
+import ayds.songinfo.moredetails.domain.Article.LastFMArticle
 
 interface LasfmLocalStorage {
-   fun getArticle(artistName: String): Article?
-   fun saveArticle(article: Article)
+   fun getArticle(artistName: String): LastFMArticle?
+   fun saveArticle(article: LastFMArticle)
 }
 
 class LastfmLocalStorageImpl(
     private val dataBase: ArticleDatabase
 ): LasfmLocalStorage{
 
-    override fun getArticle(artistName: String): Article? {
+    override fun getArticle(artistName: String): LastFMArticle? {
         val article = dataBase.ArticleDao().getArticleByArtistName(artistName)
         return if (article != null) {
-            Article(article.artistName, article.biography, article.articleUrl, true)
+            LastFMArticle(article.artistName, article.biography, article.articleUrl, true)
         } else null
     }
 
-    override fun saveArticle(article: Article) {
+    override fun saveArticle(article: LastFMArticle) {
         if (article.biography != null) {
             Thread {
                 dataBase.ArticleDao().insertArticle(
