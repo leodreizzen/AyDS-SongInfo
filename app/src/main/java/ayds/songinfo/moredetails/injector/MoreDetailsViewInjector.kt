@@ -1,8 +1,8 @@
 package ayds.songinfo.moredetails.injector
-import ayds.songinfo.moredetails.presentation.MoreDetails
+import ayds.songinfo.moredetails.presentation.MoreDetailsView
 
 object MoreDetailsViewInjector {
-    fun init(moreDetails: MoreDetails){
-        MoreDetailsPresenterInjector.init(moreDetails)
+    fun init(moreDetailsView: MoreDetailsView){
+        MoreDetailsPresenterInjector.init(moreDetailsView)
     }
 }
