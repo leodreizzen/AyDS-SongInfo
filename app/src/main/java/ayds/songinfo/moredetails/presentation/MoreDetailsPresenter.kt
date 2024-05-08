@@ -4,16 +4,16 @@ import ayds.observer.Subject
 import ayds.songinfo.moredetails.domain.Article
 import ayds.songinfo.moredetails.domain.ArticleRepository
 
-interface OtherInfoPresenter {
+interface MoreDetailsPresenter {
     val textObservable: Observable<String>
     val urlObservable: Observable<String>
     fun onOpen(artistName: String)
 }
 private const val NO_RESULTS_TEXT: String = "No results"
 
-class OtherInfoPresenterImpl(
+class MoreDetailsPresenterImpl(
    private val repository: ArticleRepository
-): OtherInfoPresenter{
+): MoreDetailsPresenter{
     override val textObservable = Subject<String>()
     override val urlObservable = Subject<String>()
 

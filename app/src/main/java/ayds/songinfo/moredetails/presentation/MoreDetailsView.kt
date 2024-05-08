@@ -21,7 +21,7 @@ class MoreDetailsView : Activity() {
     private lateinit var articleTextView: TextView
     private lateinit var openURLButton : View
     private lateinit var imageView: ImageView
-    private lateinit var presenter: OtherInfoPresenter
+    private lateinit var presenter: MoreDetailsPresenter
     private var uiState = MoreDetailsUIState()
 
     override fun onCreate(savedInstanceState: Bundle?) {
