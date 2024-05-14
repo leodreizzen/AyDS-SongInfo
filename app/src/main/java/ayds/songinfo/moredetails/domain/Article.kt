@@ -7,5 +7,5 @@ sealed class Article {
         val articleUrl: String,
         val isLocallyStored: Boolean
     ): Article()
-    object EmptyArticle: Article()
+    data object EmptyArticle: Article()
 }

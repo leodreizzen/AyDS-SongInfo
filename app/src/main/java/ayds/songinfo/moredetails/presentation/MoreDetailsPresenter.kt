@@ -5,17 +5,18 @@ import ayds.songinfo.moredetails.domain.Article
 import ayds.songinfo.moredetails.domain.ArticleRepository
 
 interface MoreDetailsPresenter {
-    val textObservable: Observable<String>
-    val urlObservable: Observable<String>
+    val articleObservable: Observable<ArticleUIState>
     fun onOpen(artistName: String)
 }
 private const val NO_RESULTS_TEXT: String = "No results"
 
+private const val NOT_FOUND = "Not found"
+
 class MoreDetailsPresenterImpl(
-   private val repository: ArticleRepository
+   private val repository: ArticleRepository,
+   private val articleDescriptionHelper: ArticleDescriptionHelper
 ): MoreDetailsPresenter{
-    override val textObservable = Subject<String>()
-    override val urlObservable = Subject<String>()
+    override val articleObservable = Subject<ArticleUIState>()
 
     override fun onOpen(artistName: String) {
         Thread {
@@ -31,27 +32,29 @@ class MoreDetailsPresenterImpl(
     private fun showData(
         article: Article,
     ) {
-        when (article){
-            is Article.LastFMArticle -> {
-                showArticle(article)
-            }
-            Article.EmptyArticle -> {
-                showNoResultsArticle()
-            }
-        }
-    }
-
-    private fun showNoResultsArticle() {
-        urlObservable.notify("")
-        textObservable.notify(NO_RESULTS_TEXT)
-    }
-
-    private fun showArticle(article: Article.LastFMArticle) {
-        urlObservable.notify(article.articleUrl)
-        textObservable.notify(getText(article))
+        articleObservable.notify(articleToUiState(article))
     }
 
     private fun getText(article: Article.LastFMArticle): String{
         return (if (article.isLocallyStored) "[*]" else "") + (article.biography ?: "No Results")
     }
+
+    private fun lastFMArticleToUiState(article: Article.LastFMArticle):ArticleUIState =
+        ArticleUIState(
+            articleDescriptionHelper.getDescription(article),
+            article.articleUrl
+        )
+
+    private fun emptyArticleToUiState(article: Article.EmptyArticle):ArticleUIState =
+        ArticleUIState(
+            NOT_FOUND,
+            null
+        )
+
+    private fun articleToUiState(article: Article) =
+        if (article is Article.LastFMArticle)
+            lastFMArticleToUiState(article)
+        else
+            emptyArticleToUiState(article as Article.EmptyArticle)
+
 }
