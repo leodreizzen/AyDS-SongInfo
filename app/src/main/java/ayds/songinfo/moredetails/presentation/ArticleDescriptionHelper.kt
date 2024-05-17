@@ -11,10 +11,6 @@ interface ArticleDescriptionHelper{
 
 
 internal class ArticleDescriptionHelperImpl: ArticleDescriptionHelper {
-
-
-
-
     override fun getDescription(article: Article.LastFMArticle): String{
         return textToHTML(getTextBiography(article), article.artistName)
     }

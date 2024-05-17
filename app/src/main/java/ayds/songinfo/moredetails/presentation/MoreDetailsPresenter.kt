@@ -8,9 +8,6 @@ interface MoreDetailsPresenter {
     val articleObservable: Observable<ArticleUIState>
     fun onOpen(artistName: String)
 }
-private const val NO_RESULTS_TEXT: String = "No results"
-
-private const val NOT_FOUND = "Not found"
 
 internal class MoreDetailsPresenterImpl(
    private val repository: ArticleRepository,
@@ -44,7 +41,7 @@ internal class MoreDetailsPresenterImpl(
 
     private fun emptyArticleToUiState():ArticleUIState =
         ArticleUIState(
-            NOT_FOUND,
+            ArticleUIState.NOT_FOUND,
             null
         )
 

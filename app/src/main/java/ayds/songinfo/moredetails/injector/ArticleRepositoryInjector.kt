@@ -8,6 +8,7 @@ import ayds.songinfo.moredetails.data.external.lastfm.LastFmArticleServiceImpl
 import ayds.songinfo.moredetails.data.local.lastfm.ArticleDatabase
 import ayds.songinfo.moredetails.data.local.lastfm.LastfmLocalStorageImpl
 import ayds.songinfo.moredetails.domain.ArticleRepository
+import ayds.songinfo.utils.ErrorLoggerImpl
 import retrofit2.Retrofit
 import retrofit2.converter.scalars.ScalarsConverterFactory
 
@@ -24,7 +25,9 @@ object ArticleRepositoryInjector {
             LastFmArticleServiceImpl(articleResolver, lastFMAPI)
         val lastfmLocalStorage = LastfmLocalStorageImpl(database)
 
-        repository = ArticleRepositoryImpl(lastFMArticleService, lastfmLocalStorage)
+        val errorLogger = ErrorLoggerImpl()
+
+        repository = ArticleRepositoryImpl(lastFMArticleService, lastfmLocalStorage, errorLogger)
     }
 
     private fun initFMAPI(): LastFMAPI {
