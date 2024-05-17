@@ -13,6 +13,6 @@ fun Int.getMonthName() = when(this){
         10 -> "October"
         11 -> "November"
         12 -> "December"
-        else -> "Invalid month"
+        else -> ""
     }
 fun Int.isLeapYear() = ((this % 4 == 0 && this % 100 != 0) || (this % 400 == 0))

@@ -12,7 +12,7 @@ class ReleaseDateDayResolverTest {
         val releaseDateDayResolver =
             ReleaseDateDayResolver(mockk { every { releaseDate } returns "1992-02-01" })
 
-        val result = releaseDateDayResolver.getReleaseDate()
+        val result = releaseDateDayResolver.getReleaseDateText()
 
         assertEquals(result, "01/02/1992")
     }

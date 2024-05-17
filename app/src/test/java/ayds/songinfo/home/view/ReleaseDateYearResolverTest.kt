@@ -15,7 +15,7 @@ class ReleaseDateYearResolverTest {
     fun `on get release date should return not leap year`() {
         every { song.releaseDate } returns "1991"
 
-        val result = releaseDateYearResolver.getReleaseDate()
+        val result = releaseDateYearResolver.getReleaseDateText()
 
         Assert.assertEquals(result, "1991 (not a leap year)")
     }
@@ -23,7 +23,7 @@ class ReleaseDateYearResolverTest {
     fun `on get release date should return leap year`() {
         every { song.releaseDate } returns "2024"
 
-        val result = releaseDateYearResolver.getReleaseDate()
+        val result = releaseDateYearResolver.getReleaseDateText()
 
         Assert.assertEquals(result, "2024 (leap year)")
     }

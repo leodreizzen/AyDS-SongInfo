@@ -34,7 +34,7 @@ interface SongReleaseDateHelper {
 internal class ReleaseDateDayResolver(override val song: SpotifySong) : SongReleaseDateHelper {
     override fun getReleaseDateText(): String{
         val partes = song.releaseDate.split("-").map{it.toInt()}
-        return "${partes[2]}/${partes[1]}/${partes[0]}"
+        return "${partes[2].toString().padStart(2, '0')}/${partes[1].toString().padStart(2, '0')}/${partes[0]}"
     }
 }
 

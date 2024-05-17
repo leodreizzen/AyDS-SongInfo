@@ -9,9 +9,9 @@ import org.junit.Test
 
 class SongDescriptionHelperTest {
 
-    private val releaseDateResolverFactory: ReleaseDateResolverFactory = mockk {
+    private val releaseDateResolverFactory: SongReleaseDateFactory = mockk {
         every { getReleaseDateResolver(any()) } returns mockk {
-            every { getReleaseDate() } returns "1992"
+            every { getReleaseDateText() } returns "1992"
         }
     }
     private val songDescriptionHelper = SongDescriptionHelperImpl(releaseDateResolverFactory)

@@ -7,13 +7,13 @@ import org.junit.Test
 
 class ReleaseDateResolverFactoryImplTest {
 
-    private val releaseDateResolverFactory: ReleaseDateResolverFactory =
-        ReleaseDateResolverFactoryImpl()
+    private val releaseDateResolverFactory: SongReleaseDateFactory =
+        SongReleaseDateFactoryImpl()
 
     @Test
     fun `on day precision should return day precision resolver`() {
-        val releaseDateResolverFactory: ReleaseDateResolverFactory =
-            ReleaseDateResolverFactoryImpl()
+        val releaseDateResolverFactory: SongReleaseDateFactory =
+            SongReleaseDateFactoryImpl()
 
         val result = releaseDateResolverFactory.getReleaseDateResolver(mockk {
             every { releaseDatePrecision } returns "day"
