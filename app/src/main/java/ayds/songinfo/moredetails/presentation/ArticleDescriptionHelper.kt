@@ -2,7 +2,6 @@ package ayds.songinfo.moredetails.presentation
 
 import ayds.songinfo.moredetails.domain.Article
 import java.util.*
-private const val NO_RESULTS = "No Results"
 private const val WIDTH = 400
 private const val FONT = "arial"
 interface ArticleDescriptionHelper{
@@ -16,7 +15,7 @@ internal class ArticleDescriptionHelperImpl: ArticleDescriptionHelper {
     }
     private fun getTextBiography(article: Article.LastFMArticle): String {
         val prefix = if (article.isLocallyStored) "[*] " else ""
-        val text = article.biography?.replace("\\n", "\n") ?: NO_RESULTS
+        val text = article.biography?.replace("\\n", "\n") ?: ArticleUIState.NOT_FOUND
         return "$prefix$text"
     }
 
