@@ -16,7 +16,7 @@ interface LastfmToArticleResolver {
     fun getArticleFromExternalData(serviceData: String, artistName: String): LastFMArticle
 }
 
-class JsonToArticleResolver: LastfmToArticleResolver{
+internal class JsonToArticleResolver: LastfmToArticleResolver{
 
     override fun getArticleFromExternalData(
         serviceData: String,

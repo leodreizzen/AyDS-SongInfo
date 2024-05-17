@@ -6,9 +6,9 @@ import ayds.songinfo.moredetails.domain.Article.EmptyArticle
 
 import ayds.songinfo.moredetails.domain.ArticleRepository
 
-class ArticleRepositoryImpl(
-    val lastfmArticleService: LastfmArticleService,
-    val lastfmLocalStorage: LasfmLocalStorage
+internal class ArticleRepositoryImpl(
+    private val lastfmArticleService: LastfmArticleService,
+    private val lastfmLocalStorage: LasfmLocalStorage
 ): ArticleRepository {
 
     override fun getArticle(artistName: String): Article {

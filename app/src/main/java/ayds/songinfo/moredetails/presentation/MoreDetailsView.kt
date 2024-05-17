@@ -44,7 +44,7 @@ class MoreDetailsView : Activity() {
         setContentView(R.layout.activity_other_info)
         articleTextView = findViewById(R.id.textPane1)
         openURLButton = findViewById(R.id.openUrlButton1)
-        imageView = findViewById<View>(R.id.imageView1) as ImageView
+        imageView = findViewById(R.id.imageView1)
     }
 
     private fun notifyPresenter() {
@@ -54,7 +54,7 @@ class MoreDetailsView : Activity() {
         }
     }
 
-    private fun getArtistName() = intent.getStringExtra("artistName")
+    private fun getArtistName() = intent.getStringExtra(ARTIST_NAME_EXTRA)
 
     private fun updateUI(state: ArticleUIState){
         uiState = state

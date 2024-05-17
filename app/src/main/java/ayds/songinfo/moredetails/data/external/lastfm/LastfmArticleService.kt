@@ -5,7 +5,7 @@ interface LastfmArticleService {
     fun getArticle(artistName: String): LastFMArticle?
 }
 
-class LastFmArticleServiceImpl(
+internal class LastFmArticleServiceImpl(
     private val articleResolver: LastfmToArticleResolver,
     private val lastFMAPI: LastFMAPI
 ) : LastfmArticleService {

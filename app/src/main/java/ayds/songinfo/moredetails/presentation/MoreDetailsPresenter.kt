@@ -12,7 +12,7 @@ private const val NO_RESULTS_TEXT: String = "No results"
 
 private const val NOT_FOUND = "Not found"
 
-class MoreDetailsPresenterImpl(
+internal class MoreDetailsPresenterImpl(
    private val repository: ArticleRepository,
    private val articleDescriptionHelper: ArticleDescriptionHelper
 ): MoreDetailsPresenter{
@@ -35,9 +35,6 @@ class MoreDetailsPresenterImpl(
         articleObservable.notify(articleToUiState(article))
     }
 
-    private fun getText(article: Article.LastFMArticle): String{
-        return (if (article.isLocallyStored) "[*]" else "") + (article.biography ?: "No Results")
-    }
 
     private fun lastFMArticleToUiState(article: Article.LastFMArticle):ArticleUIState =
         ArticleUIState(
@@ -45,7 +42,7 @@ class MoreDetailsPresenterImpl(
             article.articleUrl
         )
 
-    private fun emptyArticleToUiState(article: Article.EmptyArticle):ArticleUIState =
+    private fun emptyArticleToUiState():ArticleUIState =
         ArticleUIState(
             NOT_FOUND,
             null
@@ -55,6 +52,6 @@ class MoreDetailsPresenterImpl(
         if (article is Article.LastFMArticle)
             lastFMArticleToUiState(article)
         else
-            emptyArticleToUiState(article as Article.EmptyArticle)
+            emptyArticleToUiState()
 
 }
