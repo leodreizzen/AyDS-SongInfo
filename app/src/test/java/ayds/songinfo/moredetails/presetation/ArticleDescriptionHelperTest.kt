@@ -2,44 +2,68 @@ package ayds.songinfo.moredetails.presetation
 
 import ayds.songinfo.moredetails.domain.Article
 import ayds.songinfo.moredetails.presentation.ArticleDescriptionHelperImpl
-import io.mockk.every
-import io.mockk.mockk
+import ayds.songinfo.moredetails.presentation.ArticleUIState
+import org.junit.Assert.assertEquals
 import org.junit.Test
 
-/*class ArticleDescriptionHelperTest {
+private const val TEST_BIOGRAPHY = "line 1\\nline '2'\nline 3"
+/*
+    Should replace "\n" or \n with <br>
+    Should replace ' with space
+ */
+private const val TEST_BIOGRAPHY_REPLACED = "line 1<br>line  2 <br>line 3"
+private const val HEAD = "<html><div width=400><font face=\"arial\">"
+private const val TAIL = "</font></div></html>"
+
+class ArticleDescriptionHelperTest {
     private val articleDescriptionHelperImpl = ArticleDescriptionHelperImpl()
 
     @Test
-    fun
+    fun `locally stored with biography`(){
+        val article = Article.LastFMArticle(articleUrl = "url", biography = TEST_BIOGRAPHY, isLocallyStored = true, artistName = "artist")
 
-    @Test
-    fun `if article is locally stored its prefix should be the expected one`(){
-        val articleMockk = mockk<Article.LastFMArticle>(){ every { isLocallyStored } returns true}
-        val text = articleDescriptionHelperImpl.getTextBiography(articleMockk)
+        val res = articleDescriptionHelperImpl.getDescription(article)
 
-    }
-
-
-    @Test
-    fun `if article is not locally stored its prefix should be none`(){
-        val articleMockk = mockk<Article.LastFMArticle>(){ every { isLocallyStored } returns false}
-
-
-    }
-
-
-    @Test
-    fun `if article has biography text should be that biography replacing `(){
-        val articleMockk = mockk<Article.LastFMArticle>(){ every { biography } returns "biography"}
-
-
+        assertEquals(
+            "$HEAD[*] $TEST_BIOGRAPHY_REPLACED$TAIL",
+            res
+        )
     }
 
     @Test
-    fun `if article has biography no biography text should be NO RESULTS`(){
-        val articleMockk = mockk<Article.LastFMArticle>(){ every { biography } returns null}
+    fun `locally stored without biography`(){
+        val article = Article.LastFMArticle(articleUrl = "url", biography = null, isLocallyStored = true, artistName = "artist")
 
+        val res = articleDescriptionHelperImpl.getDescription(article)
 
+        assertEquals(
+            "$HEAD[*] ${ArticleUIState.NOT_FOUND}$TAIL",
+            res
+        )
     }
 
-}*/
+    @Test
+    fun `not locally stored with biography`(){
+        val article = Article.LastFMArticle(articleUrl = "url", biography = TEST_BIOGRAPHY, isLocallyStored = false, artistName = "artist")
+
+        val res = articleDescriptionHelperImpl.getDescription(article)
+
+        assertEquals(
+            "$HEAD$TEST_BIOGRAPHY_REPLACED$TAIL",
+            res
+        )
+    }
+
+    @Test
+    fun `not locally stored without biography`(){
+        val article = Article.LastFMArticle(articleUrl = "url", biography = null, isLocallyStored = false, artistName = "artist")
+
+        val res = articleDescriptionHelperImpl.getDescription(article)
+
+        assertEquals(
+            "$HEAD${ArticleUIState.NOT_FOUND}$TAIL",
+            res
+        )
+    }
+
+}
