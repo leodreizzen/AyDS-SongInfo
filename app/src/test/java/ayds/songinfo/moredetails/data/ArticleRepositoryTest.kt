@@ -94,7 +94,7 @@ class ArticleRepositoryTest {
         every{lastfmArticleService.getArticle(any())} returns null
         every{lastfmLocalStorage.getArticle(any())} returns null
 
-        val result = lastfmArticleService.getArticle("artist")
+        val result = repositoryImpl.getArticle("artist")
 
         assertEquals(Article.EmptyArticle, result)
 
