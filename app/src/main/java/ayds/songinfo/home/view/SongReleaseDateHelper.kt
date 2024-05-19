@@ -1,6 +1,5 @@
 package ayds.songinfo.home.view
 
-import ayds.songinfo.home.model.entities.Song
 import ayds.songinfo.home.model.entities.Song.SpotifySong
 import ayds.songinfo.utils.date.getMonthName
 import ayds.songinfo.utils.date.isLeapYear

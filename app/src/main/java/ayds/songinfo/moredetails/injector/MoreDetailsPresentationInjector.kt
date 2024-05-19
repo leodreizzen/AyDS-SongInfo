@@ -1,15 +1,14 @@
 package ayds.songinfo.moredetails.injector
 import android.content.Context
-import ayds.songinfo.moredetails.presentation.ArticleDescriptionHelper
+import ayds.songinfo.moredetails.presentation.*
 import ayds.songinfo.moredetails.presentation.ArticleDescriptionHelperImpl
-import ayds.songinfo.moredetails.presentation.MoreDetailsPresenter
 import ayds.songinfo.moredetails.presentation.MoreDetailsPresenterImpl
 
-object MoreDetailsPresenterInjector {
+object MoreDetailsPresentationInjector {
     lateinit var presenter: MoreDetailsPresenter
     fun init(context: Context){
-        ArticleRepositoryInjector.init(context)
+        DataInjector.initRepository(context)
         val articleDescriptionHelper: ArticleDescriptionHelper = ArticleDescriptionHelperImpl()
-        presenter = MoreDetailsPresenterImpl(ArticleRepositoryInjector.repository, articleDescriptionHelper)
+        presenter = MoreDetailsPresenterImpl(DataInjector.repository, articleDescriptionHelper)
     }
 }

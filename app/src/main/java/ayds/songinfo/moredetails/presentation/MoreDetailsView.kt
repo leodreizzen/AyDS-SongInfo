@@ -7,8 +7,7 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import ayds.songinfo.R
-import ayds.songinfo.moredetails.injector.MoreDetailsPresenterInjector
-import ayds.songinfo.moredetails.injector.MoreDetailsViewInjector
+import ayds.songinfo.moredetails.injector.MoreDetailsPresentationInjector
 import ayds.songinfo.utils.UtilsInjector
 import ayds.songinfo.utils.navigation.NavigationUtils
 import com.squareup.picasso.Picasso
@@ -32,8 +31,8 @@ class MoreDetailsView : Activity() {
     }
 
     private fun initModule(){
-        MoreDetailsViewInjector.init(this)
-        presenter = MoreDetailsPresenterInjector.presenter
+        MoreDetailsPresentationInjector.init(this)
+        presenter = MoreDetailsPresentationInjector.presenter
     }
 
     private fun initObservers(){

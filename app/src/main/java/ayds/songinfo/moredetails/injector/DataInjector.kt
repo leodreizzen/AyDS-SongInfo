@@ -1,4 +1,5 @@
 package ayds.songinfo.moredetails.injector
+
 import android.content.Context
 import androidx.room.Room.databaseBuilder
 import ayds.songinfo.moredetails.data.external.lastfm.LastFMAPI
@@ -14,15 +15,14 @@ import retrofit2.converter.scalars.ScalarsConverterFactory
 
 private const val AUDIO_SCROBBLER = "https://ws.audioscrobbler.com/2.0/"
 
-object ArticleRepositoryInjector {
+object DataInjector {
     lateinit var repository: ArticleRepository
-    fun init(context: Context){
+    fun initRepository(context: Context) {
         val articleResolver = JsonToArticleResolver()
         val lastFMAPI = initFMAPI()
         val database = initDatabase(context)
 
-        val lastFMArticleService =
-            LastFmArticleServiceImpl(articleResolver, lastFMAPI)
+        val lastFMArticleService = LastFmArticleServiceImpl(articleResolver, lastFMAPI)
         val lastfmLocalStorage = LastfmLocalStorageImpl(database)
 
         val errorLogger = ErrorLoggerImpl()
@@ -38,6 +38,7 @@ object ArticleRepositoryInjector {
         return retrofit.create(LastFMAPI::class.java)
     }
 
-    private fun initDatabase(context: Context) = databaseBuilder(context, ArticleDatabase::class.java, "database-name-thename").build()
+    private fun initDatabase(context: Context) =
+        databaseBuilder(context, ArticleDatabase::class.java, "database-name-thename").build()
 
 }

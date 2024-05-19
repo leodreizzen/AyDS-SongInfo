@@ -4,7 +4,6 @@ import ayds.songinfo.moredetails.domain.Article.LastFMArticle
 import com.google.gson.Gson
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
-import java.util.*
 
 private const val URL = "url"
 private const val CONTENT = "content"

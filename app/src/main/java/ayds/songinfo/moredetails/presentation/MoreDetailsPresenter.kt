@@ -17,16 +17,16 @@ internal class MoreDetailsPresenterImpl(
 
     override fun onOpen(artistName: String) {
         Thread {
-            getAndShowArtistInfo(artistName)
+            getAndNotifyArticle(artistName)
         }.start()
     }
 
-    private fun getAndShowArtistInfo(artistName: String) {
+    private fun getAndNotifyArticle(artistName: String) {
         val article = repository.getArticle(artistName)
-        showData(article)
+        notifyArticleChange(article)
     }
 
-    private fun showData(
+    private fun notifyArticleChange(
         article: Article,
     ) {
         articleObservable.notify(articleToUiState(article))
