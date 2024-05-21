@@ -15,7 +15,7 @@ private const val TEST_BIOGRAPHY_REPLACED = "line 1<br>line  2 <br>line 3"
 private const val HEAD = "<html><div width=400><font face=\"arial\">"
 private const val TAIL = "</font></div></html>"
 
-class ArticleDescriptionHelperTest {
+class ArticleExternalDescriptionHelperTest {
     private val articleDescriptionHelperImpl = ArticleDescriptionHelperImpl()
 
     @Test

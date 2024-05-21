@@ -1,6 +1,6 @@
 package ayds.songinfo.moredetails.data
 
-import ayds.songinfo.moredetails.data.external.lastfm.LastfmArticleService
+import ayds.artist.external.lastfm.LastfmArticleService
 import ayds.songinfo.moredetails.data.local.lastfm.LasfmLocalStorage
 import ayds.songinfo.moredetails.domain.Article
 import ayds.songinfo.utils.ErrorLogger
@@ -11,8 +11,8 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 
 
-class ArticleRepositoryTest {
-    private val lastfmArticleService: LastfmArticleService = mockk()
+class ArticleExternalRepositoryTest {
+    private val lastfmArticleService: ayds.artist.external.lastfm.LastfmArticleService = mockk()
     private val lastfmLocalStorage: LasfmLocalStorage = mockk(relaxUnitFun = true)
     private val errorLogger: ErrorLogger = mockk(relaxUnitFun = true)
 
