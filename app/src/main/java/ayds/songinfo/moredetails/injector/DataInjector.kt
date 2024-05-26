@@ -2,21 +2,17 @@ package ayds.songinfo.moredetails.injector
 
 import android.content.Context
 import androidx.room.Room.databaseBuilder
-import ayds.artist.external.lastfm.LastFMAPI
-import ayds.songinfo.moredetails.data.ArticleRepositoryImpl
-import ayds.artist.external.lastfm.LastFmArticleServiceImpl
+import ayds.songinfo.moredetails.data.CardRepositoryImpl
 import ayds.songinfo.moredetails.data.local.lastfm.ArticleDatabase
 import ayds.songinfo.moredetails.data.local.lastfm.LastfmLocalStorageImpl
-import ayds.songinfo.moredetails.domain.ArticleRepository
+import ayds.songinfo.moredetails.domain.CardRepository
 import ayds.songinfo.utils.ErrorLoggerImpl
-import retrofit2.Retrofit
-import retrofit2.converter.scalars.ScalarsConverterFactory
 import injector.ExternalInjector
 
 
 
 object DataInjector {
-    lateinit var repository: ArticleRepository
+    lateinit var repository: CardRepository
     fun initRepository(context: Context) {
         val database = initDatabase(context)
 
@@ -25,7 +21,7 @@ object DataInjector {
 
         val errorLogger = ErrorLoggerImpl()
 
-        repository = ArticleRepositoryImpl(lastFMArticleService, lastfmLocalStorage, errorLogger)
+        repository = CardRepositoryImpl(lastFMArticleService, lastfmLocalStorage, errorLogger)
     }
 
     private fun initDatabase(context: Context) =

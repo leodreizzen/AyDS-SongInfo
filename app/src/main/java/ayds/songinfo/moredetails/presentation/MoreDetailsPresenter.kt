@@ -1,8 +1,8 @@
 package ayds.songinfo.moredetails.presentation
 import ayds.observer.Observable
 import ayds.observer.Subject
-import ayds.songinfo.moredetails.domain.Article
-import ayds.songinfo.moredetails.domain.ArticleRepository
+import ayds.songinfo.moredetails.domain.Card
+import ayds.songinfo.moredetails.domain.CardRepository
 
 interface MoreDetailsPresenter {
     val articleObservable: Observable<ArticleUIState>
@@ -10,8 +10,8 @@ interface MoreDetailsPresenter {
 }
 
 internal class MoreDetailsPresenterImpl(
-   private val repository: ArticleRepository,
-   private val articleDescriptionHelper: ArticleDescriptionHelper
+    private val repository: CardRepository,
+    private val articleDescriptionHelper: ArticleDescriptionHelper
 ): MoreDetailsPresenter{
     override val articleObservable = Subject<ArticleUIState>()
 
@@ -22,22 +22,26 @@ internal class MoreDetailsPresenterImpl(
     }
 
     private fun getAndNotifyArticle(artistName: String) {
-        val article = repository.getArticle(artistName)
+        val article = repository.getCard(artistName)
         notifyArticleChange(article)
     }
 
     private fun notifyArticleChange(
-        article: Article,
+        card: Card,
     ) {
-        articleObservable.notify(articleToUiState(article))
+        articleObservable.notify(articleToUiState(card))
     }
 
 
-    private fun lastFMArticleToUiState(article: Article.LastFMArticle):ArticleUIState =
+    private fun lastFMArticleToUiState(card: Card.DataCard):ArticleUIState =
         ArticleUIState(
-            articleDescriptionHelper.getDescription(article),
-            article.articleUrl
+            articleDescriptionHelper.getDescription(card),
+            card.infoUrl,
+            getSourceText(card),
+            card.sourceLogoUrl
         )
+
+    private fun getSourceText(card: Card.DataCard) = "Source: ${card.source.displayName}"
 
     private fun emptyArticleToUiState():ArticleUIState =
         ArticleUIState(
@@ -45,9 +49,9 @@ internal class MoreDetailsPresenterImpl(
             null
         )
 
-    private fun articleToUiState(article: Article) =
-        if (article is Article.LastFMArticle)
-            lastFMArticleToUiState(article)
+    private fun articleToUiState(card: Card) =
+        if (card is Card.DataCard)
+            lastFMArticleToUiState(card)
         else
             emptyArticleToUiState()
 

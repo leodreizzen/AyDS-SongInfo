@@ -5,30 +5,31 @@ import androidx.room.Database
 import androidx.room.Entity
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
-import androidx.room.PrimaryKey
 import androidx.room.Query
 import androidx.room.RoomDatabase
+import ayds.songinfo.moredetails.domain.CardSource
 
-@Database(entities = [ArticleEntity::class], version = 2)
+@Database(entities = [CardEntity::class], version = 2)
 abstract class ArticleDatabase : RoomDatabase() {
     abstract fun ArticleDao(): ArticleDao
 }
 
-@Entity
-data class ArticleEntity(
-    @PrimaryKey
+@Entity(primaryKeys = ["artistName", "source"])
+data class CardEntity(
     val artistName: String,
-    val biography: String,
-    val articleUrl: String,
+    val description: String,
+    val infoUrl: String,
+    val source: CardSource,
+    val sourceLogoUrl: String
 )
 
 @Dao
 interface ArticleDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertArticle(article: ArticleEntity)
+    fun insertArticle(article: CardEntity)
 
-    @Query("SELECT * FROM Articleentity WHERE artistName LIKE :artistName LIMIT 1")
-    fun getArticleByArtistName(artistName: String): ArticleEntity?
+    @Query("SELECT * FROM CardEntity WHERE artistName LIKE :artistName")
+    fun getCardsByArtistName(artistName: String): List<CardEntity>
 
 }

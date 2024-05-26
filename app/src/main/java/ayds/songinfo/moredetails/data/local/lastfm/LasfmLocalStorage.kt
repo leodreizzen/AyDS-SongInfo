@@ -1,30 +1,34 @@
 package ayds.songinfo.moredetails.data.local.lastfm
 
-import ayds.songinfo.moredetails.domain.Article.LastFMArticle
+import ayds.songinfo.moredetails.domain.Card.DataCard
 
 interface LasfmLocalStorage {
-    fun getArticle(artistName: String): LastFMArticle?
-    fun saveArticle(article: LastFMArticle)
+    fun getCards(artistName: String): List<DataCard>
+    fun saveCard(article: DataCard)
 }
 
 internal class LastfmLocalStorageImpl(
     private val dataBase: ArticleDatabase
 ) : LasfmLocalStorage {
 
-    override fun getArticle(artistName: String): LastFMArticle? {
-        val article = dataBase.ArticleDao().getArticleByArtistName(artistName)
-        return if (article != null) {
-            LastFMArticle(article.artistName, article.biography, article.articleUrl, true)
-        } else null
+    override fun getCards(artistName: String): List<DataCard> {
+        val dbCards = dataBase.ArticleDao().getCardsByArtistName(artistName)
+        val cards = mapToDomainCards(dbCards)
+        return cards
     }
 
-    override fun saveArticle(article: LastFMArticle) {
-        if (article.biography != null) {
+    private fun mapToDomainCards(dbCards: List<CardEntity>) =
+        dbCards.map { DataCard(it.artistName, it.description, it.infoUrl, it.source, it.sourceLogoUrl, true) }
+
+    override fun saveCard(article: DataCard) {
+        if (article.description != null) {
             dataBase.ArticleDao().insertArticle(
-                ArticleEntity(
+                CardEntity(
                     article.artistName,
-                    article.biography,
-                    article.articleUrl
+                    article.description,
+                    article.infoUrl,
+                    article.source,
+                    article.sourceLogoUrl
                 )
             )
         }

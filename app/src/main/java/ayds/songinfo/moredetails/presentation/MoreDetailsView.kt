@@ -14,9 +14,10 @@ import com.squareup.picasso.Picasso
 
 
 class MoreDetailsView : Activity() {
-    private lateinit var articleTextView: TextView
-    private lateinit var openURLButton : View
-    private lateinit var imageView: ImageView
+    private lateinit var articleTextViews: MutableList<TextView>
+    private lateinit var openURLButtons : MutableList<View>
+    private lateinit var imageViews: MutableList<ImageView>
+    private lateinit var sourceTextViews: MutableList<TextView>
     private lateinit var presenter: MoreDetailsPresenter
     private var uiState = ArticleUIState()
     private val navigationUtils: NavigationUtils = UtilsInjector.navigationUtils
@@ -41,9 +42,15 @@ class MoreDetailsView : Activity() {
 
     private fun initGUI() {
         setContentView(R.layout.activity_other_info)
-        articleTextView = findViewById(R.id.textPane1)
-        openURLButton = findViewById(R.id.openUrlButton1)
-        imageView = findViewById(R.id.imageView1)
+        articleTextViews = ArrayList()
+        openURLButtons = ArrayList()
+        imageViews = ArrayList()
+        sourceTextViews = ArrayList()
+
+        articleTextViews.add(findViewById(R.id.textPane1))
+        openURLButtons.add(findViewById(R.id.openUrlButton1))
+        imageViews.add(findViewById(R.id.imageView1))
+        sourceTextViews.add(findViewById(R.id.sourceText1))
     }
 
     private fun notifyPresenter() {
@@ -59,17 +66,22 @@ class MoreDetailsView : Activity() {
         uiState = state
         runOnUiThread{
             updateText()
+            updateSource()
             updateImage()
             updateButton()
         }
     }
 
+    private fun updateSource(){
+        sourceTextViews[0].text = uiState.source
+    }
+
     private fun updateText(){
-        articleTextView.text = Html.fromHtml(uiState.text)
+        articleTextViews[0].text = Html.fromHtml(uiState.text)
     }
 
     private fun updateImage(){
-        Picasso.get().load(uiState.image).into(imageView)
+        Picasso.get().load(uiState.image).into(imageViews[0])
     }
 
     private fun updateButton(){
@@ -82,15 +94,15 @@ class MoreDetailsView : Activity() {
     }
 
     private fun hideButton() {
-        openURLButton.visibility = View.GONE
+        openURLButtons[0].visibility = View.GONE
     }
 
     private fun showButton() {
-        openURLButton.visibility = View.VISIBLE
+        openURLButtons[0].visibility = View.VISIBLE
     }
 
     private fun updateLink() {
-        openURLButton.setOnClickListener {
+        openURLButtons[0].setOnClickListener {
             openExternalLink(uiState.articleLink)
         }
     }

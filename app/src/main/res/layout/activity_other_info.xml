@@ -23,8 +23,20 @@
                 android:id="@+id/imageView1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="16dp"
-                android:paddingTop="24dp"/>
+                android:layout_marginVertical="16dp"
+                android:paddingTop="24dp"
+                android:paddingHorizontal="16dp"
+            />
+
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/sourceText1"
+                    android:layout_marginBottom="10dp"
+                    android:paddingHorizontal="16dp"
+
+            />
 
             <TextView
                 android:id="@+id/textPane1"
@@ -45,8 +57,18 @@
                 android:id="@+id/imageView2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="16dp"
-                android:paddingTop="24dp"/>
+                android:layout_marginVertical="16dp"
+                android:paddingTop="24dp"
+                android:paddingHorizontal="16dp"
+            />
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/sourceText2"
+                    android:layout_marginBottom="10dp"
+                    android:paddingHorizontal="16dp"
+            />
 
             <TextView
                 android:id="@+id/textPane2"
@@ -55,6 +77,7 @@
                 android:autoLink="web"
                 android:linksClickable="true"
                 android:padding="16dp" />
+
 
             <Button
                 android:id="@+id/openUrlButton2"
@@ -68,9 +91,19 @@
                 android:id="@+id/imageView3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="16dp"
-                android:paddingTop="24dp"/>
+                android:layout_marginVertical="16dp"
+                android:paddingTop="24dp"
+                android:paddingHorizontal="16dp"
+            />
 
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/sourceText3"
+                    android:layout_marginBottom="10dp"
+                    android:paddingHorizontal="16dp"
+
+            />
             <TextView
                 android:id="@+id/textPane3"
                 android:layout_width="wrap_content"
