@@ -7,9 +7,9 @@ internal class WikipediaTrackServiceImpl(
     private val wikipediaToInfoResolver: WikipediaToInfoResolver,
 ) : WikipediaTrackService {
 
-    override fun getInfo(artistName: String): WikipediaArticle? {
+    override fun getInfo(artistName: String): WikipediaArticle {
         val callResponse = getInfoFromService(artistName)
-        return wikipediaToInfoResolver.getInfoFromExternalData(callResponse.body())
+        return wikipediaToInfoResolver.getInfoFromExternalData(artistName, callResponse.body())
     }
 
     private fun getInfoFromService(artistName: String): Response<String> {

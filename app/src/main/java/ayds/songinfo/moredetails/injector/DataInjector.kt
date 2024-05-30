@@ -7,7 +7,7 @@ import ayds.songinfo.moredetails.data.local.lastfm.ArticleDatabase
 import ayds.songinfo.moredetails.data.local.lastfm.LastfmLocalStorageImpl
 import ayds.songinfo.moredetails.domain.CardRepository
 import ayds.songinfo.utils.ErrorLoggerImpl
-import injector.ExternalInjector
+import ayds.artist.external.lastfm.injector.LastFMInjector
 
 
 
@@ -17,7 +17,7 @@ object DataInjector {
         val database = initDatabase(context)
 
         val lastfmLocalStorage = LastfmLocalStorageImpl(database)
-        val lastFMArticleService = ExternalInjector.initArticleService()
+        val lastFMArticleService = LastFMInjector.initArticleService()
 
         val errorLogger = ErrorLoggerImpl()
 

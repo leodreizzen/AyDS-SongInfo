@@ -4,7 +4,7 @@ import com.google.gson.Gson
 import com.google.gson.JsonObject
 
 interface WikipediaToInfoResolver {
-    fun getInfoFromExternalData(serviceData: String?): WikipediaArticle?
+    fun getInfoFromExternalData(name: String, serviceData: String?): WikipediaArticle
 }
 
 private const val WIKIPEDIA_URL_PREFIX = "https://en.wikipedia.org/?curid="
@@ -16,17 +16,18 @@ private const val QUERY = "query"
 
 internal class JsonToInfoResolver : WikipediaToInfoResolver {
 
-    override fun getInfoFromExternalData(serviceData: String?): WikipediaArticle? =
+    override fun getInfoFromExternalData(name:String, serviceData: String?): WikipediaArticle =
         try {
             serviceData?.getFirstItem()?.let { item ->
-                WikipediaArticle(
+                WikipediaArticle.WikipediaArticleWithData(
+                    name,
                     item.getSnippet(),
                     item.getURL(),
                     wikipediaLogoURL = WIKIPEDIA_LOGO_URL
                 )
-            }
+            } ?: WikipediaArticle.EmptyWikipediaArticle
         } catch (e: Exception) {
-            null
+            WikipediaArticle.EmptyWikipediaArticle
         }
 
 

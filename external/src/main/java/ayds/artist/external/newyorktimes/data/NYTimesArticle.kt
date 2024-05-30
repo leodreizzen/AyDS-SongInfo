@@ -6,9 +6,10 @@ const val NYT_LOGO_URL =
 sealed class NYTimesArticle {
 
     data class NYTimesArticleWithData(
-        val name: String?,
+        val name: String,
         val info: String?,
         val url: String,
+        val sourceLogoUrl: String = NYT_LOGO_URL
     ): NYTimesArticle()
 
     object EmptyArtistDataExternal : NYTimesArticle()
