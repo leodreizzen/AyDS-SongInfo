@@ -30,7 +30,6 @@ android {
 }
 
 dependencies {
-    implementation(project(":app"))
     implementation(libs.androidx.core.ktx)
     implementation(libs.retrofit)
     implementation(libs.retrofit.converter)

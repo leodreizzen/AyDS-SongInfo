@@ -5,54 +5,60 @@ import ayds.songinfo.moredetails.domain.Card
 import ayds.songinfo.moredetails.domain.CardRepository
 
 interface MoreDetailsPresenter {
-    val articleObservable: Observable<ArticleUIState>
+    val articleObservable: Observable<List<CardUIState>>
     fun onOpen(artistName: String)
 }
 
+private const val CARD_NUMBER = 3
+
 internal class MoreDetailsPresenterImpl(
     private val repository: CardRepository,
-    private val articleDescriptionHelper: ArticleDescriptionHelper
+    private val cardDescriptionHelper: CardDescriptionHelper,
+    private val sourceNameResolver: SourceNameResolver
 ): MoreDetailsPresenter{
-    override val articleObservable = Subject<ArticleUIState>()
+    override val articleObservable = Subject<List<CardUIState>>()
 
     override fun onOpen(artistName: String) {
         Thread {
-            getAndNotifyArticle(artistName)
+            getAndNotifyCards(artistName)
         }.start()
     }
 
-    private fun getAndNotifyArticle(artistName: String) {
-        val article = repository.getCard(artistName)
-        notifyArticleChange(article)
+    private fun getAndNotifyCards(artistName: String) {
+        val cards = repository.getCards(artistName)
+        notifyCardsChange(cards)
     }
 
-    private fun notifyArticleChange(
-        card: Card,
+    private fun notifyCardsChange(
+        cards: List<Card>,
     ) {
-        articleObservable.notify(articleToUiState(card))
+        val states = cardsToStates(cards)
+        removeExtraStates(states)
+        fillEmptyStates(states)
+        articleObservable.notify(states)
+    }
+    private fun fillEmptyStates(states: MutableList<CardUIState>) {
+        for (i in states.size until CARD_NUMBER) {
+            states.add(CardUIState())
+        }
+    }
+    private fun removeExtraStates(states: MutableList<CardUIState>) {
+        while (states.size > CARD_NUMBER) {
+            states.removeAt(states.size - 1)
+        }
     }
 
+    private fun cardsToStates(cards: List<Card>): MutableList<CardUIState> {
+        return cards.map { cardToUiState(it) }.toMutableList()
+    }
 
-    private fun lastFMArticleToUiState(card: Card.DataCard):ArticleUIState =
-        ArticleUIState(
-            articleDescriptionHelper.getDescription(card),
+    private fun getSourceText(card: Card) = "Source: ${sourceNameResolver.getSourceName(card.source)}"
+
+    private fun cardToUiState(card: Card) =
+        CardUIState(
+            cardDescriptionHelper.getDescription(card),
             card.infoUrl,
             getSourceText(card),
             card.sourceLogoUrl
         )
-
-    private fun getSourceText(card: Card.DataCard) = "Source: ${card.source.displayName}"
-
-    private fun emptyArticleToUiState():ArticleUIState =
-        ArticleUIState(
-            ArticleUIState.NOT_FOUND,
-            null
-        )
-
-    private fun articleToUiState(card: Card) =
-        if (card is Card.DataCard)
-            lastFMArticleToUiState(card)
-        else
-            emptyArticleToUiState()
-
 }

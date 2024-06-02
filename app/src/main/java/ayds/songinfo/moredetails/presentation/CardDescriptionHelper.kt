@@ -6,17 +6,18 @@ private const val WIDTH = 400
 private const val FONT = "arial"
 private const val LOCALLY_STORED_PREFIX = "[*] "
 
-interface ArticleDescriptionHelper{
-    fun getDescription(card: Card.DataCard): String
+interface CardDescriptionHelper{
+    fun getDescription(card: Card): String
 }
 
-internal class ArticleDescriptionHelperImpl: ArticleDescriptionHelper {
-    override fun getDescription(card: Card.DataCard): String{
+internal class CardDescriptionHelperImpl: CardDescriptionHelper {
+    override fun getDescription(card: Card): String{
         return textToHTML(getTextBiography(card), card.artistName)
     }
-    private fun getTextBiography(card: Card.DataCard): String {
+
+    private fun getTextBiography(card: Card): String {
         val prefix = if (card.isLocallyStored) LOCALLY_STORED_PREFIX else ""
-        val text = card.description?.replace("\\n", "\n") ?: ArticleUIState.NOT_FOUND
+        val text = card.description.replace("\\n", "\n")
         return "$prefix$text"
     }
 

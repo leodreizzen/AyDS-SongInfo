@@ -7,7 +7,7 @@ sealed class NYTimesArticle {
 
     data class NYTimesArticleWithData(
         val name: String,
-        val info: String?,
+        val info: String,
         val url: String,
         val sourceLogoUrl: String = NYT_LOGO_URL
     ): NYTimesArticle()

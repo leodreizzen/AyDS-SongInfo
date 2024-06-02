@@ -13,7 +13,7 @@ internal class NYTimesServiceImpl(
         var infoArtist: String? = null
         try {
             infoArtist = nyTimesToArtistResolver.generateFormattedResponse(getInfoFromAPI(artistName), artistName)
-        } catch (e1: IOException) {
+        } catch (e1: Exception) {
             e1.printStackTrace()
         }
 

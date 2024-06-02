@@ -1,5 +1,7 @@
-package ayds.artist.external.lastfm.data
+package ayds.songinfo.moredetails.data.external
 
+import ayds.artist.external.lastfm.data.LastFMArticle
+import ayds.artist.external.lastfm.data.LastfmService
 import ayds.songinfo.moredetails.domain.Card
 import ayds.songinfo.moredetails.domain.CardSource
 

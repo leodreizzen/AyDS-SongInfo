@@ -15,11 +15,10 @@ import com.squareup.picasso.Picasso
 
 class MoreDetailsView : Activity() {
     private lateinit var articleTextViews: MutableList<TextView>
-    private lateinit var openURLButtons : MutableList<View>
+    private lateinit var openURLButtons: MutableList<View>
     private lateinit var imageViews: MutableList<ImageView>
     private lateinit var sourceTextViews: MutableList<TextView>
     private lateinit var presenter: MoreDetailsPresenter
-    private var uiState = ArticleUIState()
     private val navigationUtils: NavigationUtils = UtilsInjector.navigationUtils
 
 
@@ -31,13 +30,13 @@ class MoreDetailsView : Activity() {
         notifyPresenter()
     }
 
-    private fun initModule(){
+    private fun initModule() {
         MoreDetailsPresentationInjector.init(this)
         presenter = MoreDetailsPresentationInjector.presenter
     }
 
-    private fun initObservers(){
-        presenter.articleObservable.subscribe{updateUI(it)}
+    private fun initObservers() {
+        presenter.articleObservable.subscribe { updateUI(it) }
     }
 
     private fun initGUI() {
@@ -47,10 +46,20 @@ class MoreDetailsView : Activity() {
         imageViews = ArrayList()
         sourceTextViews = ArrayList()
 
-        articleTextViews.add(findViewById(R.id.textPane1))
+        articleTextViews.add(findViewById(R.id.CardDescriptionTextPane1))
         openURLButtons.add(findViewById(R.id.openUrlButton1))
-        imageViews.add(findViewById(R.id.imageView1))
+        imageViews.add(findViewById(R.id.SourceLogoImageView1))
         sourceTextViews.add(findViewById(R.id.sourceText1))
+
+        articleTextViews.add(findViewById(R.id.CardDescriptionTextPane2))
+        openURLButtons.add(findViewById(R.id.openUrlButton2))
+        imageViews.add(findViewById(R.id.SourceLogoImageView2))
+        sourceTextViews.add(findViewById(R.id.sourceText2))
+
+        articleTextViews.add(findViewById(R.id.CardDescriptionTextPane3))
+        openURLButtons.add(findViewById(R.id.openUrlButton3))
+        imageViews.add(findViewById(R.id.SourceLogoImageView3))
+        sourceTextViews.add(findViewById(R.id.sourceText3))
     }
 
     private fun notifyPresenter() {
@@ -62,48 +71,55 @@ class MoreDetailsView : Activity() {
 
     private fun getArtistName() = intent.getStringExtra(ARTIST_NAME_EXTRA)
 
-    private fun updateUI(state: ArticleUIState){
-        uiState = state
-        runOnUiThread{
-            updateText()
-            updateSource()
-            updateImage()
-            updateButton()
+    private fun updateUI(states: List<CardUIState>) {
+        runOnUiThread {
+            states.forEachIndexed { index, state ->
+                updateUIState(state, index)
+            }
         }
     }
 
-    private fun updateSource(){
-        sourceTextViews[0].text = uiState.source
+
+    private fun updateUIState(state: CardUIState, index : Int){
+        updateSource(state, index)
+        updateText(state, index)
+        updateImage(state, index)
+        updateButton(state, index)
+
     }
 
-    private fun updateText(){
-        articleTextViews[0].text = Html.fromHtml(uiState.text)
+    private fun updateSource(state: CardUIState, index: Int) {
+        sourceTextViews[index].text = state.source
     }
 
-    private fun updateImage(){
-        Picasso.get().load(uiState.image).into(imageViews[0])
+    private fun updateText(state: CardUIState, index: Int) {
+
+        articleTextViews[index].text = Html.fromHtml(state.text)
     }
 
-    private fun updateButton(){
-        if (uiState.articleLink != null){
-            updateLink()
-            showButton()
-        }
-        else
-            hideButton()
+    private fun updateImage(state: CardUIState, index: Int) {
+        Picasso.get().load(state.image).into(imageViews[index])
     }
 
-    private fun hideButton() {
-        openURLButtons[0].visibility = View.GONE
+    private fun updateButton(state: CardUIState, index: Int) {
+        if (state.articleLink != null) {
+            updateLink(state, index)
+            showButton(index)
+        } else
+            hideButton(index)
     }
 
-    private fun showButton() {
-        openURLButtons[0].visibility = View.VISIBLE
+    private fun hideButton(index: Int) {
+        openURLButtons[index].visibility = View.GONE
     }
 
-    private fun updateLink() {
-        openURLButtons[0].setOnClickListener {
-            openExternalLink(uiState.articleLink)
+    private fun showButton(index : Int) {
+        openURLButtons[index].visibility = View.VISIBLE
+    }
+
+    private fun updateLink(state: CardUIState, index: Int) {
+        openURLButtons[index].setOnClickListener {
+            openExternalLink(state.articleLink)
         }
     }
 
@@ -112,7 +128,7 @@ class MoreDetailsView : Activity() {
             navigationUtils.openExternalUrl(this, url)
     }
 
-    companion object{
+    companion object {
         const val ARTIST_NAME_EXTRA = "artistName"
     }
 }

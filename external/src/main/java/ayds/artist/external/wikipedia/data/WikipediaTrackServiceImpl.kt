@@ -1,6 +1,7 @@
 package ayds.artist.external.wikipedia.data
 
 import retrofit2.Response
+import java.io.IOException
 
 internal class WikipediaTrackServiceImpl(
     private val wikipediaTrackAPI: WikipediaTrackAPI,
@@ -8,8 +9,13 @@ internal class WikipediaTrackServiceImpl(
 ) : WikipediaTrackService {
 
     override fun getInfo(artistName: String): WikipediaArticle {
-        val callResponse = getInfoFromService(artistName)
-        return wikipediaToInfoResolver.getInfoFromExternalData(artistName, callResponse.body())
+        try {
+            val callResponse = getInfoFromService(artistName)
+            return wikipediaToInfoResolver.getInfoFromExternalData(artistName, callResponse.body())
+        } catch (e: IOException) {
+            return WikipediaArticle.EmptyWikipediaArticle
+        }
+
     }
 
     private fun getInfoFromService(artistName: String): Response<String> {

@@ -1,8 +1,8 @@
 package ayds.songinfo.moredetails.data
 
-import ayds.artist.external.lastfm.data.LastFMToBiographyProxy
-import ayds.artist.external.newyorktimes.data.NewYorkTimesToBiographyProxy
-import ayds.artist.external.wikipedia.data.WikipediaToBiographyProxy
+import ayds.songinfo.moredetails.data.external.LastFMToBiographyProxy
+import ayds.songinfo.moredetails.data.external.NewYorkTimesToBiographyProxy
+import ayds.songinfo.moredetails.data.external.WikipediaToBiographyProxy
 import ayds.songinfo.moredetails.domain.Card
 
 interface CardBroker {

@@ -1,7 +1,6 @@
 package ayds.songinfo.moredetails.data
 
-import ayds.artist.external.lastfm.data.LastfmService
-import ayds.songinfo.moredetails.data.local.lastfm.LasfmLocalStorage
+import ayds.songinfo.moredetails.data.local.lastfm.CardLocalStorage
 import ayds.songinfo.moredetails.domain.Card
 import ayds.songinfo.utils.ErrorLogger
 import io.mockk.every
@@ -12,93 +11,59 @@ import org.junit.Test
 
 
 class CardExternalRepositoryTest {
-    private val lastfmArticleService: LastfmService = mockk()
-    private val lastfmLocalStorage: LasfmLocalStorage = mockk(relaxUnitFun = true)
+    private val lastfmLocalStorage: CardLocalStorage = mockk(relaxUnitFun = true)
     private val errorLogger: ErrorLogger = mockk(relaxUnitFun = true)
+    private val broker: CardBroker = mockk()
 
-    private val repositoryImpl = CardRepositoryImpl(lastfmArticleService,lastfmLocalStorage, errorLogger)
+    private val repositoryImpl = CardRepositoryImpl(lastfmLocalStorage, errorLogger, broker)
 
     @Test
-    fun `if article is in local storage it should return it`(){
-        val cardMockk = mockk<Card.DataCard>()
-        every{lastfmLocalStorage.getCards("artist")} returns cardMockk
+    fun `if there are cards in local storage it should return them`(){
+        val cardsMockk = listOf( mockk<Card>())
+        every{lastfmLocalStorage.getCards("artist")} returns cardsMockk
 
-        val res = repositoryImpl.getCard("artist")
+        val res = repositoryImpl.getCards("artist")
 
-        assertEquals(cardMockk, res)
+        assertEquals(cardsMockk, res)
     }
 
 
     @Test
-    fun `if article not in local storage it should search in articleService and return it`(){
-        val cardMockk = mockk<Card.DataCard>{ every { description } returns null}
-        every{lastfmLocalStorage.getCards("artist")} returns null
-        every{lastfmArticleService.getArticle("artist")} returns cardMockk
+    fun `if article not in local storage it should search in broker, save them, and return them`(){
+        val cardsMockk = listOf( mockk<Card>())
 
-        val res = repositoryImpl.getCard("artist")
+        every{lastfmLocalStorage.getCards("artist")} returns listOf()
+        every{broker.getCards("artist")} returns cardsMockk
 
-        assertEquals(cardMockk, res)
+        val res = repositoryImpl.getCards("artist")
+
+        verify { lastfmLocalStorage.saveCards(cardsMockk) }
+        assertEquals(cardsMockk, res)
     }
 
     @Test
-    fun `if article from articleService has biography, it should save the article in local storage`(){
-        val cardMockk = mockk<Card.DataCard>{ every { description } returns "biography"}
-        every{lastfmLocalStorage.getCards("artist")} returns null
-        every{lastfmArticleService.getArticle("artist")} returns cardMockk
+    fun `if article not found in any place, it should return empty list and not save anything`(){
+        every{lastfmLocalStorage.getCards("artist")} returns listOf()
+        every{broker.getCards("artist")} returns listOf()
 
-        repositoryImpl.getCard("artist")
+        val res = repositoryImpl.getCards("artist")
 
-        verify { lastfmLocalStorage.saveCard(cardMockk)}
-
+        verify(inverse = true) { lastfmLocalStorage.saveCards(any()) }
+        assertEquals(listOf<Card>(), res)
     }
 
     @Test
-    fun `if article from articleService does not have biography, it should not save the article in local storage`(){
-        val cardMockk = mockk<Card.DataCard>{ every { description } returns null}
-        every{lastfmLocalStorage.getCards("artist")} returns null
-        every{lastfmArticleService.getArticle("artist")} returns cardMockk
-
-        repositoryImpl.getCard("artist")
-
-        verify(inverse = true) { lastfmLocalStorage.saveCard(cardMockk)}
-
-    }
-
-    @Test
-    fun `if there is an exception on article service, it should return EmptyArticle`(){
-        every{lastfmLocalStorage.getCards("artist")} returns null
-        every{lastfmArticleService.getArticle("artist")} throws Exception()
-
-        val res = repositoryImpl.getCard("artist")
-
-        assertEquals(Card.EmptyCard, res)
-
-    }
-
-    @Test
-    fun `if there is an exception saving to local storage, it should log it return the article anyways`(){
-        val cardMockk = mockk<Card.DataCard>{ every { description } returns "biography"}
-        every{lastfmLocalStorage.getCards("artist")} returns null
+    fun `if there is an exception saving to local storage, it should log it and return the cards anyways`(){
+        val cardsMockk = listOf(mockk<Card>{ every { description } returns "biography"})
+        every{lastfmLocalStorage.getCards("artist")} returns listOf()
         val exception = Exception("MSG")
-        every{lastfmLocalStorage.saveCard(any())} throws exception
+        every{lastfmLocalStorage.saveCards(any())} throws exception
 
-        every{lastfmArticleService.getArticle("artist")} returns cardMockk
+        every{broker.getCards("artist")} returns cardsMockk
 
-        val res = repositoryImpl.getCard("artist")
+        val res = repositoryImpl.getCards("artist")
         verify{errorLogger.logError("Error saving to database", exception.message)}
-        assertEquals(cardMockk, res)
+        assertEquals(cardsMockk, res)
     }
-
-    @Test
-    fun `if article article not found in any place it should return EmptyArticle`(){
-        every{lastfmArticleService.getArticle(any())} returns null
-        every{lastfmLocalStorage.getCards(any())} returns null
-
-        val result = repositoryImpl.getCard("artist")
-
-        assertEquals(Card.EmptyCard, result)
-
-    }
-
 
 }

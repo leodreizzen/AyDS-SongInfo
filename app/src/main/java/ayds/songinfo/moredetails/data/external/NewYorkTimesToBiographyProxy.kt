@@ -1,5 +1,7 @@
-package ayds.artist.external.newyorktimes.data
+package ayds.songinfo.moredetails.data.external
 
+import ayds.artist.external.newyorktimes.data.NYTimesArticle
+import ayds.artist.external.newyorktimes.data.NYTimesService
 import ayds.songinfo.moredetails.domain.Card
 import ayds.songinfo.moredetails.domain.CardSource
 
